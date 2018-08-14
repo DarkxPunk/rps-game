@@ -7,14 +7,17 @@
 	}
 	
 	const weapons = {
-		rock:		{ beats: ['scissors'] },
-		paper:		{ beats: ['rock'] },
-		scissors:	{ beats: ['paper'] },
-		nuke:		{ beats: ['rock', 'paper', 'scissors'] }
+		rock:		{ beats: ['scissors', 'lizard'] },
+		paper:		{ beats: ['rock', 'spock'] },
+		scissors:	{ beats: ['paper', 'lizard'] },
+		lizard:		{ beats: ['paper', 'spock']},
+		spock:		{ beats: ['rock', 'scissors']},
+		nuke:		{ beats: ['rock', 'paper', 'scissors', 'lizard', 'spock'] }
 	};
 	const weaponsArray = Object.keys(weapons);
 	const scores = {
 		player:		0,
+		winState:	'',
 		computer:	0,
 		tie:		0,
 		round:		0,
@@ -41,20 +44,23 @@
 	function playRound() {
 		const computerWeapon = getComputerWeapon();
 		const playerWeapon = getPlayerWeapon();
+		const playedWeapons = [computerWeapon, playerWeapon];
 		if (playerWeapon === null) { return null; }
-		else if (playerWeapon === computerWeapon) { scores.tie += 1; }
-		else if (weapons[playerWeapon].beats.includes(computerWeapon)) { scores.player += 1; }
-		else if (!weapons[playerWeapon].beats.includes(computerWeapon)) { scores.computer += 1; }
+		else if (playerWeapon === computerWeapon) { scores.tie += 1; scores.winState = 'Tied'; }
+		else if (weapons[playerWeapon].beats.includes(computerWeapon)) { scores.player += 1; scores.winState = 'Win'; }
+		else if (!weapons[playerWeapon].beats.includes(computerWeapon)) { scores.computer += 1; scores.winState = 'Lose'; }
 		else { return; }
 		scores.round += 1;
+		return playedWeapons;
 	}
 	
 	function playGame() {
 		while (scores.player < 5 && scores.computer < 5) {
-			if (playRound() === null) { return; }
-			console.log(`*** Round: ${scores.round} ***`);
-			console.log(`Player Score: ${scores.player}`);
-			console.log(`Computer Score: ${scores.computer}`);
+			const playedWeapons = playRound();
+			if (playedWeapons === null) { return; }
+			console.log(`*** Round: ${scores.round} | ${scores.winState} ***`);
+			console.log(`Player Weapon: ${capitalizeString(playedWeapons[1])} | Computer Weapon: ${capitalizeString(playedWeapons[0])}`);
+			console.log(`Player Score: ${scores.player} | Computer Score: ${scores.computer}`);
 			console.log(`Tie Score: ${scores.tie}`);
 		}
 		if (scores.player === 5) { return console.log('You win!'); }
